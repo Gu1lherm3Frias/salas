@@ -1,18 +1,18 @@
 services:
   salas:
-    build: .
+    image: salas:latest
     container_name: salas
     ports:
       - "8000:80"
     depends_on:
       - mariadb
-      - selenium
     networks:
       - salas-network
     volumes:
       - ./:/var/www/html
-      - storage_data:/var/www/html/storage
-      - cache_data:/var/www/html/bootstrap/cache
+    environment:
+      HOME: /tmp
+    user: "${UID:-1000}:${GID:-1000}"
 
   mariadb:
     image: mariadb:11
@@ -28,21 +28,29 @@ services:
     networks:
       - salas-network
 
-  # http://localhost:7900 senha: secret 
   selenium:
-    image: selenium/standalone-chrome:latest
+    image: selenium/standalone-chrome
     container_name: salas_selenium
     ports:
-      - "4444:4444" # WebDriver
-      - "7900:7900" # VNC (ver browser)
-    shm_size: 2gb
+      - "7900:7900" # VNC (pra ver o browser rodando)
     networks:
       - salas-network
+    shm_size: 2gb
+    
+  senhaunica-faker:
+    image: uspdev/senhaunica-faker
+    container_name: salas_senhaunica-faker
+    ports:
+      - "3141:3141"
+    environment:
+          - APP_URL=http://auth.local:3141
+    networks:
+      salas-network:
+        aliases:
+          - auth.local
 
 networks:
   salas-network:
 
 volumes:
   mariadb_data:
-  storage_data:
-  cache_data:
