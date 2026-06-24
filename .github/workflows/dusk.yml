@@ -12,7 +12,7 @@ jobs:
       mariadb:
         image: mariadb:10.11
         env:
-          MARIADB_DATABASE: salas_dusk
+          MARIADB_DATABASE: db
           MARIADB_ROOT_PASSWORD: admin
           MARIADB_USER: admin
           MARIADB_PASSWORD: admin
